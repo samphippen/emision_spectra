@@ -15,14 +15,11 @@ borderLength = 2.5
 rowLength = 0.5
 lowerBand = 4000
 upperBand = 7500
-fh = open( "formtop.html", "r" );
-x = fh.read();
-fh.close();
+x = "<html><head><title>Spectrum!</title></head><body>"
 element = "Si"
 x += scarves.prettyPrintPatternHTML( scarves.designScarf( totalLength, rowLength, borderLength, element, lowerBand, upperBand ) );
 
-fh = open( "formbottom.html", "r" );
-x += fh.read();
-fh.close();
-print x;
-
+x += "</body></html>"
+f = open("spectra.html", "w")
+f.write(x)
+f.close()
