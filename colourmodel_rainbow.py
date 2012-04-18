@@ -13,29 +13,52 @@ def blend_value(lower, upper, lowercolor, uppercolor, value):
     return tuple(blendcolor)
 
 def angstromToRGB( wavelength, intensity ):
-    if( wavelength < 3800 ):
-        wavelengthColour = (0.0, 0.0, 0.0);
-    # violet
-    if( wavelength >= 3800 and wavelength < 4200 ):
-        wavelengthColour = blend_value(3800,4200, (0,0,0), (0.5,0.0,1.0), wavelength)
-    # indigo
-    if( wavelength >= 4200 and wavelength < 4400 ):
-        wavelengthColour = blend_value(4200, 4400, (0.5,0.0,1.0), (0.3, 0.0, 0.5), wavelength)
-    # blue
-    if( wavelength >= 4400 and wavelength < 5200 ):
-        wavelengthColour = blend_value(4400, 5200, (0.3,0.0,0.5), (0.0, 0.0, 1.0), wavelength)
-    # green
-    if( wavelength >= 5200 and wavelength < 5700 ):
-        wavelengthColour = blend_value(5200, 5700, (0.0, 0.0, 1.0), (0.0,1.0,0.0), wavelength)
-    # yellow
-    if( wavelength >= 5700 and wavelength < 5850 ):
-        wavelengthColour = blend_value(5700, 5850, (0.0,1.0,0.0), (1.0,1.0,0.0), wavelength)
-    # orange
-    if( wavelength >= 5850 and wavelength < 6300 ):
-        wavelengthColour = blend_value(5850, 6300, (1.0,1.0,0.0), (1.0,0.5,0.0), wavelength)
-    # red
-    if( wavelength >= 6300 and wavelength < 7400 ):
-        wavelengthColour = blend_value(6300, 7400, (1.0,0.5,0.0),(1.0,0.0,0.0), wavelength)
-    if( wavelength >= 7400 ):
-        wavelengthColour = (0.0, 0.0, 0.0);
-    return tuple( [x * intensity for x in wavelengthColour] );
+    t = wav2RGB(wavelength/10.0)
+    return (t[0]*intensity,t[1]*intensity,t[2]*intensity)
+
+def wav2RGB(wavelength):
+    w = int(wavelength)
+    print wavelength
+
+    # colour
+    if w >= 380 and w < 440:
+        R = -(w - 440.) / (440. - 350.)
+        G = 0.0
+        B = 1.0
+    elif w >= 440 and w < 490:
+        R = 0.0
+        G = (w - 440.) / (490. - 440.)
+        B = 1.0
+    elif w >= 490 and w < 510:
+        R = 0.0
+        G = 1.0
+        B = -(w - 510.) / (510. - 490.)
+    elif w >= 510 and w < 580:
+        R = (w - 510.) / (580. - 510.)
+        G = 1.0
+        B = 0.0
+    elif w >= 580 and w < 645:
+        R = 1.0
+        G = -(w - 645.) / (645. - 580.)
+        B = 0.0
+    elif w >= 645 and w <= 780:
+        R = 1.0
+        G = 0.0
+        B = 0.0
+    else:
+        R = 0.0
+        G = 0.0
+        B = 0.0
+
+    # intensity correction
+    if w >= 380 and w < 420:
+        SSS = 0.3 + 0.7*(w - 350) / (420 - 350)
+    elif w >= 420 and w <= 700:
+        SSS = 1.0
+    elif w > 700 and w <= 780:
+        SSS = 0.3 + 0.7*(780 - w) / (780 - 700)
+    else:
+        SSS = 0.0
+    SSS *= 255
+
+    return [int(SSS*R), int(SSS*G), int(SSS*B)]
